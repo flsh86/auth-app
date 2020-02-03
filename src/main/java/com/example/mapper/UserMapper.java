@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserMapper {
-//    private PasswordEncoder passwordEncoder;
-//
-//    @Autowired
-//    public UserMapper(PasswordEncoder passwordEncoder) {
-//        this.passwordEncoder = passwordEncoder;
-//    }
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public UserDTO toDTO(User user) {
         Set<RoleDTO> roles = user.getRoles()
@@ -29,8 +29,7 @@ public class UserMapper {
         return new UserDTO(
                 user.getId(),
                 user.getUsername(),
-//                passwordEncoder.encode(user.getPassword()),
-                user.getPassword(),
+                passwordEncoder.encode(user.getPassword()),
                 user.getEmail(),
                 roles);
     }
@@ -44,8 +43,7 @@ public class UserMapper {
         return new User(
                 dto.getId(),
                 dto.getUsername(),
-//                passwordEncoder.encode(dto.getPassword()),
-                dto.getPassword(),
+                passwordEncoder.encode(dto.getPassword()),
                 dto.getEmail(),
                 role
         );

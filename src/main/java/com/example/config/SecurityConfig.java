@@ -16,35 +16,27 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//    @Autowired
-//    private DataSource dataSource;
-//
-//    @Autowired
-//    private UserDetailsService userDetailsService;
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-//            .userDetailsService(userDetailsService);
-////                    .userDetailsPasswordManager(userDetailsService);
-//    }
+
+    @Bean
+    BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers("/h2-console/**");
-//                .antMatchers("/api/users/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .httpBasic()
                 .and()
-                .csrf().disable()
                 .authorizeRequests()
                     .antMatchers("/h2-console/**").permitAll()
-//                    .antMatchers("/api/users").hasRole("USER")
+                    .antMatchers("/api/users").hasRole("ADMIN")
                 .and()
                     .formLogin().permitAll()
                 .and()
