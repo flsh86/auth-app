@@ -31,6 +31,7 @@ public class UserMapper {
                 user.getUsername(),
                 passwordEncoder.encode(user.getPassword()),
                 user.getEmail(),
+                user.getEnabled(),
                 roles);
     }
 

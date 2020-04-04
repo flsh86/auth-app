@@ -1,7 +1,7 @@
-INSERT INTO users(id, username, password, email) VALUES
-(1, 'u1', '123', 'mail@yahoo.com'),
-(2, 'u2', '123', 'email@gmail.com'),
-(3, 'u3', '123', 'adamczarodziej@xd.pl');
+INSERT INTO users(id, username, password, email, status) VALUES
+(1, 'u1', '123', 'mail@yahoo.com', true),
+(2, 'u2', '123', 'email@gmail.com', true),
+(3, 'u3', '123', 'adamczarodziej@xd.pl', true);
 
 INSERT INTO roles(id, role) VALUES
 (1, 'ROLE_ADMIN'),

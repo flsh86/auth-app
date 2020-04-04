@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 //                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                     .formLogin().permitAll()
+                    .defaultSuccessUrl("/api/user")
                 .and()
                     .logout().permitAll();
     }

@@ -22,6 +22,9 @@ public class User {
     @Email
     private String email;
 
+    @Column(name = "status")
+    private Boolean isEnabled = false;
+
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -79,6 +82,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        isEnabled = enabled;
     }
 
     public Set<Role> getRoles() {
