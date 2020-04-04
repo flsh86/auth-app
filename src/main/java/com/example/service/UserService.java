@@ -38,14 +38,11 @@ public class UserService {
 
     public UserDTO findUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-
-        if(user.isPresent()) {
-            return userMapper.toDTO(user.get());
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
+        return user.map(
+                u -> userMapper.toDTO(u)
+        ).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
     }
 
     public void addUser(UserDTO dto) {

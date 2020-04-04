@@ -25,6 +25,12 @@ public class UserResource {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping(value = {"/{id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
+        UserDTO dto = userService.findUserById(id);
+        return ResponseEntity.ok(dto);
+    }
+
     @PostMapping()
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) {
         userService.addUser(userDTO);
