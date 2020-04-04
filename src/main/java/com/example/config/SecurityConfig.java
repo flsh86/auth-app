@@ -31,14 +31,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .httpBasic()
+                .cors()
                 .and()
+                .csrf().disable()
                 .authorizeRequests()
                     .antMatchers("/h2-console/**").permitAll()
-                    .antMatchers("/api/users").hasRole("ADMIN")
+//                    .antMatchers("/api/users").hasRole("ADMIN")
                 .and()
+//                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                     .formLogin().permitAll()
+                    .defaultSuccessUrl("/api/user")
                 .and()
                     .logout().permitAll();
     }
