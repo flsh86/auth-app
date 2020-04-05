@@ -26,4 +26,9 @@ public class TokenResource {
         return ResponseEntity.ok("Congratulation you have activated your account successfully");
     }
 
+    @GetMapping(path = "/resendRegistrationToken")
+    public ResponseEntity<?> resendRegistrationToken(@RequestParam(name = "token") String existingToken) {
+        tokenService.reSendRegistrationToken(existingToken);
+        return ResponseEntity.ok("Check your email for new registration link");
+    }
 }
