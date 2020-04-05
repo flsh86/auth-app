@@ -52,7 +52,7 @@ public class TokenService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token was not found"));
 
         LocalDateTime createdTime = confirmationToken.getCreateDate();
-        boolean isExpired = Duration.between(createdTime, LocalDateTime.now()).toMinutes() > 30;
+        boolean isExpired = Duration.between(createdTime, LocalDateTime.now()).toMinutes() > 5;
 
         if (!isExpired) {
             String userEmail = confirmationToken.getUser().getEmail();
@@ -68,4 +68,24 @@ public class TokenService {
         }
     }
 
+    public void reSendRegistrationToken(String existingToken) {
+        if(existingToken == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        ConfirmationToken confirmationToken = confirmationTokenRepository
+                .findByConfirmationToken(existingToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token was not found"));
+
+        User user = userRepository
+                .findByEmail(confirmationToken.getUser().getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found"));
+
+        if(!user.getEnabled()) {
+            confirmationTokenRepository.delete(confirmationToken);
+            registerUser(user);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already active");
+        }
+    }
 }
