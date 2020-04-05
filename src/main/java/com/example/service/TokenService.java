@@ -10,6 +10,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -45,30 +47,25 @@ public class TokenService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        Optional<ConfirmationToken> confirmationToken = confirmationTokenRepository.findByConfirmationToken(token);
+        ConfirmationToken confirmationToken = confirmationTokenRepository
+                .findByConfirmationToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token was not found"));
 
-//        Date expire = confirmationToken
-//                .map(ConfirmationToken::getCreateDate)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        LocalDateTime createdTime = confirmationToken.getCreateDate();
+        boolean isExpired = Duration.between(createdTime, LocalDateTime.now()).toMinutes() > 30;
 
-        String userEmail = confirmationToken
-//                .flatMap(c -> {
-//                    if(c.getCreateDate().after(c.getCreateDate().getTime() +))
-//                })
-                .map(ConfirmationToken::getUser)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST))
-                .getEmail();
-
-
-
-        Optional<User> user = userRepository.findByEmail(userEmail);
-        user.ifPresentOrElse(u -> {
-                    u.setEnabled(true);
-                    userRepository.save(u);
-                },
-                () -> {
-                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with that email was not found");
-                });
+        if (!isExpired) {
+            String userEmail = confirmationToken.getUser().getEmail();
+            Optional<User> user = userRepository.findByEmail(userEmail);
+            user.ifPresentOrElse(u -> {
+                u.setEnabled(true);
+                userRepository.save(u);
+            }, () -> {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User was not found");
+            });
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token expired");
+        }
     }
 
 }
