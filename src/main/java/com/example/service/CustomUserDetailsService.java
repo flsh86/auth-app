@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.repository.UserRepository;
+import com.example.role.Role;
 import com.example.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,20 +29,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User was not found"));
 
-        if(user.isEmpty()) {
-            throw new UsernameNotFoundException("User not found");
-        }
 
         return new org.springframework.security.core.userdetails.User(
-                user.get().getUsername(),
-                        bCryptPasswordEncoder.encode(user.get().getPassword()),
-                convertAuthorities(user.get()));
+                user.getUsername(),
+                        bCryptPasswordEncoder.encode(user.getPassword()),
+                convertAuthorities(user.getRoles()));
     }
 
-    private Set<GrantedAuthority> convertAuthorities(User user) {
-        return user.getRoles().stream()
+    private Set<GrantedAuthority> convertAuthorities(Set<Role> roles) {
+        return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole()))
                 .collect(Collectors.toSet());
     }
