@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -42,11 +43,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                    .antMatchers("/api/users").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager()));
-//                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-//                    .formLogin().permitAll()
-//                    .defaultSuccessUrl("/api/user")
-//                .and()
-//                    .logout().permitAll();
+                .addFilter(getAuthenticationFilter())
+                .addFilter(getAuthorizationFilter())
+                .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
+
+    //Used to change default login url from /login to /users/login
+    private AuthenticationFilter getAuthenticationFilter() throws Exception {
+        final AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager());
+        authenticationFilter.setFilterProcessesUrl("/users/login");
+        return authenticationFilter;
+    }
+
+    private AuthorizationFilter getAuthorizationFilter() throws Exception {
+        final AuthorizationFilter authorizationFilter = new AuthorizationFilter(authenticationManager());
+        return authorizationFilter;
+    }
+
 }

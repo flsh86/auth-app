@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 //Class created for accessing user from AuthenticationFilter.class
 //It's used to set an id of an user into response header
 
+@Configuration
 public class SpringApplicationContext implements ApplicationContextAware {
     private static ApplicationContext CONTEXT;
 
