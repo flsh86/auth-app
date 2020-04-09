@@ -50,6 +50,15 @@ public class UserService {
         );
     }
 
+    public UserDTO findByUserName(String userName) {
+        Optional<User> user = userRepository.findByUsername(userName);
+        return user.map(
+                u -> userMapper.toDTO(u)
+        ).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+    }
+
     public void addUser(UserDTO dto) {
         if(dto == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
