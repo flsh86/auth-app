@@ -6,6 +6,7 @@ import com.example.repository.RoleRepository;
 import com.example.repository.UserRepository;
 import com.example.role.RoleDTO;
 import com.example.service.CustomUserDetailsService;
+import com.example.service.UserService;
 import com.example.user.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .withSubject(username)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(TOKEN_SECRET.getBytes()));
+
+        //Accessed in here because of SpringApplicationContext.class
+        UserService userService = (UserService) SpringApplicationContext.getBean("userService");
+        UserDTO dto = userService.findByUserName(username);
+
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        response.addHeader("UserID", dto.getId().toString());
     }
 
 }
